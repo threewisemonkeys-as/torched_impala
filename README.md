@@ -51,5 +51,7 @@ $ python test.py -pp ./models/IMPALA_RacecarBulletEnv-v0_400.pt -hd 32 -en Racec
 - [X] Fix OSError
 - [X] Add batched updates
 - [X] Add tensorboard logging
-- [ ] Test performance
+- [X] Test performance
+- [ ] Fix performance collapse issues
 - [ ] Add comand line argument support
+
