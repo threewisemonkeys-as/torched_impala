@@ -9,10 +9,10 @@ from learner import Learner
 from models import MlpPolicy, MlpValueFn
 
 hparams = utils.Hyperparameters(
-    max_updates=30,
+    max_updates=50,
     policy_hidden_dims=128,
     value_fn_hidden_dims=128,
-    batch_size=16,
+    batch_size=32,
     gamma=0.99,
     rho_bar=1.0,
     c_bar=1.0,
@@ -24,13 +24,13 @@ hparams = utils.Hyperparameters(
     entropy_c=0.0006,
     max_timesteps=1000,
     queue_lim=8,
-    max_norm=40,
-    n_actors=2,
-    env_name="RacecarBulletEnv-v0",
+    max_norm=10,
+    n_actors=1,
+    env_name="CartPole-v1",          # "RacecarBulletEnv-v0",
     log_path="./logs/",
     save_every=50,
-    eval_every=5,
-    eval_eps=50,
+    eval_every=2,
+    eval_eps=20,
     verbose=1,
     render=False,
 )

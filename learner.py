@@ -39,6 +39,7 @@ class Learner:
         self.optimizer = torch.optim.Adam(
             [*self.policy.parameters(), *self.value_fn.parameters()], lr=self.hp.lr
         )
+        self.scheduler = torch.optim.lr_scheduler.LambdaLR(self.optimizer, lambda epoch: 0.95)
         self.timeout = timeout
         self.q = q
         self.update_counter = update_counter
@@ -179,13 +180,21 @@ class Learner:
                     self.value_fn.parameters(), self.hp.max_norm
                 )
                 self.optimizer.step()
+                self.scheduler.step()
                 # self.policy_optimizer.step()
                 # self.value_fn_optimizer.step()
+
+                # log to console
+                if self.hp.verbose >= 1:
+                    print(
+                        f"[learner_{self.id}] Update {update_count + 1} | "
+                        f"Batch Mean Reward: {reward:.2f} | Loss: {loss.item():.2f}"
+                    )
 
                 # evaluate current policy
                 if self.hp.eval_every is not None:
                     if (update_count + 1) % self.hp.eval_every == 0:
-                        eval_r = utils.test_policy(
+                        eval_r, eval_std = utils.test_policy(
                             self.policy,
                             self.hp.env_name,
                             self.hp.eval_eps,
@@ -195,7 +204,7 @@ class Learner:
                         if self.hp.verbose >= 1:
                             print(
                                 f"[learner_{self.id}] Update {update_count + 1} | "
-                                f"Evaluation Reward: {eval_r:.2f}"
+                                f"Evaluation Reward: {eval_r:.2f}, Std Dev: {eval_std:.2f}"
                             )
                         if self.log_path is not None:
                             writer.add_scalar(
@@ -203,13 +212,6 @@ class Learner:
                                 eval_r,
                                 update_count + 1,
                             )
-
-                # log to console
-                if self.hp.verbose >= 1:
-                    print(
-                        f"[learner_{self.id}] Update {update_count + 1} | "
-                        f"Batch Mean Reward: {reward:.2f} | Loss: {loss.item():.2f}"
-                    )
 
                 # log to tensorboard
                 if self.log_path is not None:

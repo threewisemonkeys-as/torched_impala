@@ -5,6 +5,7 @@ from typing import List, Union
 
 import gym
 import pybullet_envs  # noqa: F401
+import numpy as np
 import torch
 import torch.multiprocessing as mp
 
@@ -148,7 +149,8 @@ def test_policy(
                 f.write(ep_text)
         if verbose:
             print(ep_text)
-    avg_reward = sum(rewards) / len(rewards)
+    avg_reward = np.mean(rewards)
+    std_dev = np.std(rewards)
     complete_text = (
         f"-----\n"
         f"Testing completed in "
@@ -161,4 +163,4 @@ def test_policy(
         with open(fpath, mode="a") as f:
             f.write(complete_text)
 
-    return avg_reward
+    return avg_reward, std_dev
